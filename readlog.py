@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import src.sfmtest
+import src.sfmtest as sfmtest
 
 import sys
 from os.path import join, isdir

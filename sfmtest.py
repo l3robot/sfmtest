@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import src.sfmtest
+import src.sfmtest as sfmtest
 
 if __name__ == '__main__':
-	lib.sfmtest.main()
+	sfmtest.main()
