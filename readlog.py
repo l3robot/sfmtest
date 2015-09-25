@@ -6,14 +6,33 @@ import sys
 from os.path import join, isdir
 from os import listdir
 
+def createHead(di):
+
+	start = di.find("sfmtest-") + len("sfmtest-")
+	end = di.find("_")
+
+	dataset = di[start:end]
+
+	start = end
+	end = di.find("img")
+
+	nbimage = di[start:end]
+
+	head = "Test on {0} with {1} images".format(dataset, nbimage)
+
+	return head
+
 def all_logs(dirpath):
 
 	dirs = [join(dirpath, im) for im in listdir(dirpath) if isdir(join(dirpath, im))]
 
 	for di in dirs:
+
 		if di[-1] != "/":
 			di = di+"/"
-		head = "FOR {0}".format(di)
+
+		head = createHead(di)
+		
 		thelen = len(head) 
 		print(head)
 		print("-"*thelen)

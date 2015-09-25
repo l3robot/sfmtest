@@ -99,7 +99,7 @@ def start_sfm(test_dir_name):
 	with open(test_dir_name+"log.txt", "w") as f:
 		call(command, stdout=f)
 
-	print("End of VisualSFM processing")
+	print("End of VisualSFM process")
 
 # Erase images in test_dir/images
 def clean_dir(test_dir_name, images_to_test):
