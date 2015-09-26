@@ -13,7 +13,7 @@ def createHead(di):
 
 	dataset = di[start:end]
 
-	start = end
+	start = end+1
 	end = di.find("img")
 
 	nbimage = di[start:end]

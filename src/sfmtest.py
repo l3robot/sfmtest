@@ -146,6 +146,10 @@ def correct_nvm(test_dir_name, dirpath):
 
 	nvm_path = test_dir_name+"sfm.nvm"
 
+	nvm_bp_path = nvm_path + ".bp"
+
+	copy(nvm_path, nvm_bp_path)
+
 	if dirpath[-1] != '/':
 		dirpath = dirpath + '/'
 
