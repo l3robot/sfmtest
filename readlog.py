@@ -3,7 +3,7 @@
 import src.sfmtest as sfmtest
 
 import sys
-from os.path import join, isdir
+from os.path import join, isdir, isfile
 from os import listdir
 
 def createHead(di):
@@ -30,6 +30,9 @@ def all_logs(dirpath):
 
 		if di[-1] != "/":
 			di = di+"/"
+
+		if !isfile(di+"log.txt"):
+			continue
 
 		head = createHead(di)
 		
