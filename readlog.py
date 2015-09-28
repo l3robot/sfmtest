@@ -31,7 +31,7 @@ def all_logs(dirpath):
 		if di[-1] != "/":
 			di = di+"/"
 
-		if !isfile(di+"log.txt"):
+		if not isfile(di+"log.txt"):
 			continue
 
 		head = createHead(di)
