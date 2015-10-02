@@ -114,15 +114,32 @@ def clean_dir(test_dir_name, images_to_test):
 		image = images_dir+image
 		os.remove(image)
 
+# Create a head for read_log
+def createHead(di):
+
+	start = di.find("sfmtest-") + len("sfmtest-")
+	end = di.find("_")
+
+	dataset = di[start:end]
+
+	start = end+1
+	end = di.find("img")
+
+	nbimage = di[start:end]
+
+	head = "Test on {0} with {1} images".format(dataset, nbimage)
+
+	return head
+
 # Read the log and give informations
 def read_log(test_dir_name):
-
-	print("Reading log")
 
 	with open(test_dir_name+"log.txt", "r") as f:
 		log = f.read()
 
-	infos = []
+	head = createHead(test_dir_name)
+
+	infos = [head, "-"*len(head), "Reading log", "Timing infos :"]
 
 	pt = 0
 
@@ -133,9 +150,30 @@ def read_log(test_dir_name):
 		pt = end
 		infos.append(log[start:end])
 
-	print("Timing infos :")
+	return "\n".join(infos)
 
-	print("\n".join(infos))
+def parse_log(test_dir_name):
+
+	infos = read_log(test_dir_name)
+
+	results = dict()
+
+	(head, _, _, _, sift_infos, match_infos, ba_infos) = infos.split('\n')
+
+	dataset = head[head.find("on ")+3:head.find(" with")]
+	nb_images = head[head.find("with ")+5:head.find(" images")]
+
+	nb_sift = sift_infos[0:sift_infos.find(" Feature")]
+	t_sift = sift_infos[sift_infos.find(", ")+2:sift_infos.find(" sec")]
+
+	nb_match = match_infos[0:match_infos.find(" Image")] 
+	t_match = match_infos[match_infos.find(", ")+2:match_infos.find(" sec")] 
+	
+	t_ba =  ba_infos[ba_infos.find(", ")+2:ba_infos.find(" sec")]
+
+	return {'dataset':dataset, 'nb_images':int(nb_images), 'nb_sift':int(nb_sift),\
+			't_sift':int(t_sift), 'nb_match':int(nb_match), 't_match':int(t_match),\
+			't_ba':int(t_ba)}
 
 # Move test_dir in working directory
 def keep_result(test_dir_name):
