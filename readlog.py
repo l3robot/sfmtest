@@ -88,6 +88,7 @@ def gen_latex(results):
 			table.add_hline()
 
 	doc.generate_pdf("results")
+	doc.generate_tex("results")
 
 	subprocess.Popen(["evince results.pdf"],shell=True)
 
