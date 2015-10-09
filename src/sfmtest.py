@@ -5,6 +5,8 @@ import sys
 import os
 import time
 
+import numpy as np
+
 from subprocess import call
 from shutil import copy, move
 
@@ -139,7 +141,33 @@ def read_log(test_dir_name):
 
 	head = createHead(test_dir_name)
 
+	nb_images = int(head[head.find("with ")+5:head.find(" images")])
+
 	infos = [head, "-"*len(head), "Reading log", "Timing infos :"]
+
+	pt = 0
+
+	sizes = []
+
+	for i in range(nb_images):
+		idx = log.find("image_size:", pt)
+		if idx == -1:
+			print("Found {0} image size".format(i))
+			break
+		start = idx + len("image_size: ")
+		end = log.find("\n", start)
+		pt = end
+		size = log[start:end].split('x')
+		sizes.append(int(size[0])*int(size[1]))
+
+	if len(sizes) > 0:
+		mean_sizes = int(np.mean(sizes))
+		std_sizes = int(np.std(sizes))
+
+		infos.append('mean size : {0} -- std size : {1}'.format(mean_sizes, std_sizes))
+	else:
+		infos.append('mean size : {0} -- std size : {1}'.format("none", "none"))
+
 
 	pt = 0
 
@@ -158,10 +186,16 @@ def parse_log(test_dir_name):
 
 	results = dict()
 
-	(head, _, _, _, sift_infos, match_infos, ba_infos) = infos.split('\n')
+	(head, _, _, _, size_infos, sift_infos, match_infos, ba_infos) = infos.split('\n')
 
 	dataset = head[head.find("on ")+3:head.find(" with")]
 	nb_images = head[head.find("with ")+5:head.find(" images")]
+
+	mean_sizes = size_infos\
+	[size_infos.find("mean size : ")+len("mean size : "):size_infos.find(" --")] 
+
+	std_sizes = size_infos\
+	[size_infos.find("std size : ")+len("std size : "):size_infos.find("\n")]
 
 	nb_sift = sift_infos[0:sift_infos.find(" Feature")]
 	t_sift = sift_infos[sift_infos.find(", ")+2:sift_infos.find(" sec")]
@@ -171,9 +205,9 @@ def parse_log(test_dir_name):
 	
 	t_ba =  ba_infos[ba_infos.find(", ")+2:ba_infos.find(" sec")]
 
-	return {'dataset':dataset, 'nb_images':int(nb_images), 'nb_sift':int(nb_sift),\
-			't_sift':int(t_sift), 'nb_match':int(nb_match), 't_match':int(t_match),\
-			't_ba':int(t_ba)}
+	return {'dataset':dataset, 'mean_sizes':int(mean_sizes), 'std_sizes':int(std_sizes),\
+	        'nb_images':int(nb_images), 'nb_sift':int(nb_sift), 't_sift':int(t_sift),\
+	        'nb_match':int(nb_match), 't_match':int(t_match), 't_ba':int(t_ba)}
 
 # Move test_dir in working directory
 def keep_result(test_dir_name):

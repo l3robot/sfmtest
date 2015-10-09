@@ -23,9 +23,13 @@ def to_real_time(sec):
 def apply_function(dataset, func): #not very effective
 
 	if func == 'NbTests':
-		return str(len(dataset['nb_images']))
+		return str(len(dataset['nb_images'])) #it's kind of a hack, might be good to change it
 	elif func == 'MeanNbImage':
 		return str(np.mean(dataset['nb_images']))
+	elif func == 'MeanSize':
+		return str(np.mean(dataset['mean_sizes']))
+	elif func == 'MeanStdSize':
+		return str(np.mean(dataset['std_sizes']))
 	elif func == 'MeanNbSift':
 		return str(np.mean(dataset['nb_sift']))
 	elif func == 'MeanSiftTime':
@@ -65,12 +69,12 @@ def gen_latex(results):
 
 			table.add_hline()
 
-			columns = ('NbTests', 'MeanNbImage', 'MeanNbSift', 'MeanSiftTime', 'StdSiftTime',\
-				   'MeanNbMatch', 'MeanMatchTime', 'StdMatchTime', 'MeanBATime', 'StdBATime')
+			columns = ('NbTests', 'MeanNbImage', 'MeanSize', 'MeanStdSize',\
+				       'MeanNbSift', 'MeanSiftTime', 'StdSiftTime',\
+				       'MeanNbMatch', 'MeanMatchTime','StdMatchTime',\
+				       'MeanBATime', 'StdBATime')
 
 			for column in columns:
-
-				# table.add_hline()
 
 				row = [column]
 
@@ -95,15 +99,13 @@ def tabular_results(dirs):
 		infos = sfmtest.parse_log(di)
 
 		results[infos['dataset']]['nb_images'].append(infos['nb_images'])
+		results[infos['dataset']]['mean_sizes'].append(infos['mean_sizes'])
+		results[infos['dataset']]['std_sizes'].append(infos['std_sizes'])
 		results[infos['dataset']]['nb_sift'].append(infos['nb_sift'])
 		results[infos['dataset']]['t_sift'].append(infos['t_sift'])
 		results[infos['dataset']]['nb_match'].append(infos['nb_match'])
 		results[infos['dataset']]['t_match'].append(infos['t_match'])
 		results[infos['dataset']]['t_ba'].append(infos['t_ba'])
-	
-	# for key, values in results.items():
-	# 	print(key)
-	# 	print(values)
 
 	gen_latex(results)
 
