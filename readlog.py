@@ -31,7 +31,9 @@ def apply_function(dataset, func): #not very effective
 	elif func == 'MeanStdSize':
 		return str(np.mean(dataset['std_sizes']))
 	elif func == 'MeanNbSift':
-		return str(np.mean(dataset['nb_sift']))
+		return str(np.mean(dataset['mean_nb_sift']))
+	elif func == 'MeanStdNbSift':
+		return str(np.mean(dataset['std_nb_sift']))
 	elif func == 'MeanSiftTime':
 		return to_real_time(np.mean(dataset['t_sift'])) 
 	elif func == 'StdSiftTime':
@@ -70,9 +72,9 @@ def gen_latex(results):
 			table.add_hline()
 
 			columns = ('NbTests', 'MeanNbImage', 'MeanSize', 'MeanStdSize',\
-				       'MeanNbSift', 'MeanSiftTime', 'StdSiftTime',\
-				       'MeanNbMatch', 'MeanMatchTime','StdMatchTime',\
-				       'MeanBATime', 'StdBATime')
+				       'MeanNbSift', 'MeanStdNbSift', 'MeanSiftTime',\
+				       'StdSiftTime','MeanNbMatch', 'MeanMatchTime',\
+				       'StdMatchTime','MeanBATime', 'StdBATime')
 
 			for column in columns:
 
@@ -101,7 +103,8 @@ def tabular_results(dirs):
 		results[infos['dataset']]['nb_images'].append(infos['nb_images'])
 		results[infos['dataset']]['mean_sizes'].append(infos['mean_sizes'])
 		results[infos['dataset']]['std_sizes'].append(infos['std_sizes'])
-		results[infos['dataset']]['nb_sift'].append(infos['nb_sift'])
+		results[infos['dataset']]['mean_nb_sift'].append(infos['mean_nb_sift'])
+		results[infos['dataset']]['std_nb_sift'].append(infos['std_nb_sift'])
 		results[infos['dataset']]['t_sift'].append(infos['t_sift'])
 		results[infos['dataset']]['nb_match'].append(infos['nb_match'])
 		results[infos['dataset']]['t_match'].append(infos['t_match'])

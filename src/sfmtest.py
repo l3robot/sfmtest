@@ -145,6 +145,8 @@ def read_log(test_dir_name):
 
 	infos = [head, "-"*len(head), "Reading log", "Timing infos :"]
 
+	### Images size
+
 	pt = 0
 
 	sizes = []
@@ -168,6 +170,33 @@ def read_log(test_dir_name):
 	else:
 		infos.append('mean size : {0} -- std size : {1}'.format("none", "none"))
 
+	### Sift number
+
+	pt = 0
+
+	nbs_sift = []
+
+	for i in range(nb_images):
+		pt = log.find("SIFT:", pt)
+		pt = log.find("x", pt)
+		idx = log.find(", ", pt)
+		if idx == -1:
+			print("Found {0} sift number".format(i))
+			break
+		start = idx + 1
+		end = log.find(",", start)
+		pt = end
+		nbs_sift.append(int(log[start:end])) 
+
+	if len(nbs_sift) > 0:
+		mean_nb_sift = int(np.mean(nbs_sift))
+		std_nb_sift = int(np.std(nbs_sift))
+
+		infos.append('mean sift number : {0} -- std sift number : {1}'.format(mean_nb_sift, std_nb_sift))
+	else:
+		infos.append('mean sift number : {0} -- std sift number : {1}'.format("none", "none"))
+
+	### Timing info
 
 	pt = 0
 
@@ -186,27 +215,43 @@ def parse_log(test_dir_name):
 
 	results = dict()
 
-	(head, _, _, _, size_infos, sift_infos, match_infos, ba_infos) = infos.split('\n')
+	(head, _, _, _, size_infos, nb_sift_infos, time_sift_infos, match_infos, ba_infos) = infos.split('\n')
 
+	### dataset name
 	dataset = head[head.find("on ")+3:head.find(" with")]
+	
+	### number of image
 	nb_images = head[head.find("with ")+5:head.find(" images")]
 
+	### size infos
 	mean_sizes = size_infos\
 	[size_infos.find("mean size : ")+len("mean size : "):size_infos.find(" --")] 
 
 	std_sizes = size_infos\
 	[size_infos.find("std size : ")+len("std size : "):size_infos.find("\n")]
 
-	nb_sift = sift_infos[0:sift_infos.find(" Feature")]
-	t_sift = sift_infos[sift_infos.find(", ")+2:sift_infos.find(" sec")]
+	### sift number infos
+	mean_nb_sift = nb_sift_infos\
+	[nb_sift_infos.find\
+	("mean sift number : ")+len("mean sift number : "):nb_sift_infos.find(" --")]
 
+	std_nb_sift = nb_sift_infos\
+	[nb_sift_infos.find\
+	("std sift number : ")+len("std sift number : "):nb_sift_infos.find("\n")] 
+	
+	### sift timing infos
+	t_sift = time_sift_infos[time_sift_infos.find(", ")+2:time_sift_infos.find(" sec")]
+
+	### match infos
 	nb_match = match_infos[0:match_infos.find(" Image")] 
 	t_match = match_infos[match_infos.find(", ")+2:match_infos.find(" sec")] 
 	
+	### bundler adjustment infos
 	t_ba =  ba_infos[ba_infos.find(", ")+2:ba_infos.find(" sec")]
 
 	return {'dataset':dataset, 'mean_sizes':int(mean_sizes), 'std_sizes':int(std_sizes),\
-	        'nb_images':int(nb_images), 'nb_sift':int(nb_sift), 't_sift':int(t_sift),\
+	        'nb_images':int(nb_images),'mean_nb_sift':int(mean_nb_sift),\
+	        'std_nb_sift':int(std_nb_sift), 't_sift':int(t_sift),\
 	        'nb_match':int(nb_match), 't_match':int(t_match), 't_ba':int(t_ba)}
 
 # Move test_dir in working directory
