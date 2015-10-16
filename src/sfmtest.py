@@ -53,7 +53,8 @@ def choose_image(dirpath, number):
 
 	print("-- Beginning tests on {0} images of {1} --".format(number, dirname))
 
-	images = [os.path.join(dirpath, im) for im in os.listdir(dirpath) if file_and_image(dirpath, im)]
+	images = [os.path.join(dirpath, im) for im in os.listdir(dirpath)\
+	if file_and_image(dirpath, im)]
 
 	try:
 		idx = random.sample(range(0,len(images)), int(number))
@@ -143,7 +144,7 @@ def read_log(test_dir_name):
 
 	nb_images = int(head[head.find("with ")+5:head.find(" images")])
 
-	infos = [head, "-"*len(head), "Reading log", "Timing infos :"]
+	infos = [head, "-"*len(head), "Reading log", "Reconstruction infos :"]
 
 	### Images size
 
@@ -192,9 +193,47 @@ def read_log(test_dir_name):
 		mean_nb_sift = int(np.mean(nbs_sift))
 		std_nb_sift = int(np.std(nbs_sift))
 
-		infos.append('mean sift number : {0} -- std sift number : {1}'.format(mean_nb_sift, std_nb_sift))
+		infos.append('mean sift number : {0} -- std sift number : {1}'\
+			.format(mean_nb_sift, std_nb_sift))
 	else:
-		infos.append('mean sift number : {0} -- std sift number : {1}'.format("none", "none"))
+		infos.append('mean sift number : {0} -- std sift number : {1}'\
+			.format("~Not Found~", "~Not Found~"))
+
+	### CMVS/PMVS info
+
+	pt = 0
+	c = 0
+	t_cpmvs = []
+
+	while 1:
+		pt = log.find(" seconds were used by PMVS", pt)
+		start = pt
+		if pt < 0:
+			print("Found {0} CMVS/PMVS infos".format(c))
+			break
+		while log[start] != "\n" : 
+			start-=1
+		start+=1
+		end = pt
+		pt+=4 #just to be sure that it doesn't find the same one..
+		c+=1
+		t_cpmvs.append(int(log[start:end])) 
+
+	### Cameras kept
+
+	if os.path.isfile(test_dir_name+"sfm.nvm"): 
+		with open(test_dir_name+"sfm.nvm", "r") as fp:
+			for i, line in enumerate(fp):
+				if i == 2:
+					nb_cameras_kept = int(line[0:line.find(" ")])
+				elif i > 2:
+					break 
+
+		infos.append("Number of cameras kept : {0} -- Proportion : {1:.2f}"\
+			.format(nb_cameras_kept, nb_cameras_kept/nb_images*100))
+	else:
+		infos.append("Number of cameras kept : {0} -- Proportion : {1}"\
+			.format("Not Found", "Not Found"))
 
 	### Timing info
 
@@ -205,7 +244,23 @@ def read_log(test_dir_name):
 		start = log.find('\n', idx) + 1
 		end = log.find('\n', start)
 		pt = end
-		infos.append(log[start:end])
+		if idx < 0:
+			infos.append("Timing not found")
+		else:
+			infos.append(log[start:end])
+
+	if len(t_cpmvs) > 0:
+		t_cpmvs = int(np.sum(t_cpmvs))
+
+		infos.append('CMVS/PMVS finished, {0} sec used'.format(t_cpmvs))
+	else:
+		infos.append('CMVS/PMVS finished, {0} sec used'.format("~Not Found~"))
+
+	start = log.find("Totally ")
+	if start < 0:
+		infos.append("Information about total time used not found.")
+	else:
+		infos.append(log[start:log.find("\n", start)])
 
 	return "\n".join(infos)
 
@@ -215,7 +270,9 @@ def parse_log(test_dir_name):
 
 	results = dict()
 
-	(head, _, _, _, size_infos, nb_sift_infos, time_sift_infos, match_infos, ba_infos) = infos.split('\n')
+	(head, _, _, _, size_infos, nb_sift_infos, nb_cameras_kept_infos,\
+		time_sift_infos, match_infos, ba_infos,\
+		t_cpmvs_infos, t_time_infos) = infos.split('\n')
 
 	### dataset name
 	dataset = head[head.find("on ")+3:head.find(" with")]
@@ -223,36 +280,125 @@ def parse_log(test_dir_name):
 	### number of image
 	nb_images = head[head.find("with ")+5:head.find(" images")]
 
+	try:
+		nb_images = int(nb_images)
+	except ValueError: 
+		nb_images = "~Not Found~"
+
 	### size infos
 	mean_sizes = size_infos\
-	[size_infos.find("mean size : ")+len("mean size : "):size_infos.find(" --")] 
+	[size_infos.find("mean size : ")+len("mean size : "):size_infos.find(" --")]
+
+	try:
+		mean_sizes = int(mean_sizes)
+	except ValueError: 
+		mean_sizes = "~Not Found~"
 
 	std_sizes = size_infos\
 	[size_infos.find("std size : ")+len("std size : "):size_infos.find("\n")]
+
+	try:
+		std_sizes = int(std_sizes)
+	except ValueError: 
+		std_sizes = "~Not Found~"
 
 	### sift number infos
 	mean_nb_sift = nb_sift_infos\
 	[nb_sift_infos.find\
 	("mean sift number : ")+len("mean sift number : "):nb_sift_infos.find(" --")]
 
+	try:
+		mean_nb_sift = int(mean_nb_sift)
+	except ValueError: 
+		mean_nb_sift = "~Not Found~"
+
 	std_nb_sift = nb_sift_infos\
 	[nb_sift_infos.find\
 	("std sift number : ")+len("std sift number : "):nb_sift_infos.find("\n")] 
+
+	try:
+		std_nb_sift = int(std_nb_sift)
+	except ValueError: 
+		std_nb_sift = "~Not Found~"
 	
+	### cameras kept infos
+	nb_cameras_kept = nb_cameras_kept_infos\
+	[nb_cameras_kept_infos.find\
+	("Number of cameras kept : ")+len("Number of cameras kept : "):\
+	nb_cameras_kept_infos.find(" --")]
+
+	try:
+		nb_cameras_kept = float(nb_cameras_kept)
+	except ValueError: 
+		nb_cameras_kept = "~Not Found~"
+
+	nb_cameras_kept_prop = nb_cameras_kept_infos[nb_cameras_kept_infos.find\
+	("-- Proportion : ")+len("-- Proportion : "):nb_sift_infos.find("\n")]
+	
+	try:
+		nb_cameras_kept_prop = float(nb_cameras_kept_prop)
+	except ValueError: 
+		nb_cameras_kept_prop = "~Not Found~"
+
 	### sift timing infos
 	t_sift = time_sift_infos[time_sift_infos.find(", ")+2:time_sift_infos.find(" sec")]
+
+	try:
+		t_sift = float(t_sift)
+	except ValueError: 
+		t_sift = "~Not Found~"
 
 	### match infos
 	nb_match = match_infos[0:match_infos.find(" Image")] 
 	t_match = match_infos[match_infos.find(", ")+2:match_infos.find(" sec")] 
+
+	try:
+		nb_match = int(nb_match)
+	except ValueError: 
+		nb_match = "~Not Found~"
+
+	try:
+		t_match = float(t_match)
+	except ValueError: 
+		t_match = "~Not Found~"
 	
 	### bundler adjustment infos
 	t_ba =  ba_infos[ba_infos.find(", ")+2:ba_infos.find(" sec")]
 
-	return {'dataset':dataset, 'mean_sizes':int(mean_sizes), 'std_sizes':int(std_sizes),\
-	        'nb_images':int(nb_images),'mean_nb_sift':int(mean_nb_sift),\
-	        'std_nb_sift':int(std_nb_sift), 't_sift':int(t_sift),\
-	        'nb_match':int(nb_match), 't_match':int(t_match), 't_ba':int(t_ba)}
+	try:
+		t_ba = float(t_ba)
+	except ValueError: 
+		t_ba = "~Not Found~"
+
+	### CMVS/PMVS infos
+	t_cpmvs =  t_cpmvs_infos[t_cpmvs_infos.find(", ")+2:t_cpmvs_infos.find(" sec")]
+
+	try:
+		t_cpmvs = float(t_cpmvs)
+	except ValueError: 
+		t_cpmvs = "~Not Found~"
+
+	### Total time infos
+	t_time =  t_time_infos[t_time_infos.find("Totally ")+8:t_time_infos.find(" used")]
+
+	t_time = t_time.split(" ")
+
+	try:
+		t_time[0] = float(t_time[0])
+	except ValueError: 
+		t_time[0] = "~Not Found~"
+
+	if t_time[1] == "minutes":
+		t_time = t_time[0] * 60.0
+	else:
+		t_time = t_time[0] 
+
+	return {'dataset':dataset, 'mean_sizes':mean_sizes, 'std_sizes':std_sizes,\
+	        'nb_images':nb_images,'mean_nb_sift':mean_nb_sift,\
+	        'nb_cameras_kept':nb_cameras_kept, 'nb_cameras_kept_prop':nb_cameras_kept_prop,\
+	        'std_nb_sift':std_nb_sift, 't_sift':t_sift,\
+	        'nb_match':nb_match, 't_match':t_match,\
+	        't_ba':t_ba, 't_cpmvs':t_cpmvs, 't_time':t_time}
 
 # Move test_dir in working directory
 def keep_result(test_dir_name):

@@ -23,33 +23,94 @@ def to_real_time(sec):
 def apply_function(dataset, func): #not very effective
 
 	if func == 'NbTests':
-		return str(len(dataset['nb_images'])) #it's kind of a hack, might be good to change it
+		metric = len
+		value = 'nb_images' #it's kind of a hack, might be good to change it
+
 	elif func == 'MeanNbImage':
-		return str(np.mean(dataset['nb_images']))
+		metric = np.mean
+		value = 'nb_images'
+
 	elif func == 'MeanSize':
-		return str(np.mean(dataset['mean_sizes']))
+		metric = np.mean
+		value = 'mean_sizes'
+
 	elif func == 'MeanStdSize':
-		return str(np.mean(dataset['std_sizes']))
+		metric = np.mean
+		value = 'std_sizes'
+
+	elif func == 'MeanNbCamerasKept':
+		metric = np.mean
+		value = 'nb_cameras_kept_prop'
+
+	elif func == 'StdNbCamerasKept':
+		metric = np.std
+		value = 'nb_cameras_kept_prop'
+
 	elif func == 'MeanNbSift':
-		return str(np.mean(dataset['mean_nb_sift']))
+		metric = np.mean
+		value = 'mean_nb_sift'
+
 	elif func == 'MeanStdNbSift':
-		return str(np.mean(dataset['std_nb_sift']))
+		metric = np.mean
+		value = 'std_nb_sift'
+
 	elif func == 'MeanSiftTime':
-		return to_real_time(np.mean(dataset['t_sift'])) 
+		metric = lambda x: to_real_time(np.mean(x))
+		value = 't_sift'
+
 	elif func == 'StdSiftTime':
-		return to_real_time(np.std(dataset['t_sift'])) 
+		metric = lambda x: to_real_time(np.std(x))
+		value = 't_sift'
+
 	elif func == 'MeanNbMatch':
-		return str(np.mean(dataset['nb_match']))
+		metric = np.mean
+		value = 'nb_match'
+
 	elif func == 'MeanMatchTime':
-		return to_real_time(np.mean(dataset['t_match'])) 
+		metric = lambda x: to_real_time(np.mean(x))
+		value = 't_match'
+
 	elif func == 'StdMatchTime':
-		return to_real_time(np.std(dataset['t_match'])) 
+		metric = lambda x: to_real_time(np.std(x))
+		value = 't_match'
+
 	elif func == 'MeanBATime':
-		return to_real_time(np.mean(dataset['t_ba'])) 
+		metric = lambda x: to_real_time(np.mean(x))
+		value = 't_ba'
+
 	elif func == 'StdBATime':
-		return to_real_time(np.std(dataset['t_ba'])) 
+		metric = lambda x: to_real_time(np.std(x))
+		value = 't_ba'
+
+	elif func == 'MeanCMVS/PMVSTime':
+		metric = lambda x: to_real_time(np.mean(x))
+		value = 't_cpmvs'
+
+	elif func == 'StdCMVS/PMVSTime':
+		metric = lambda x: to_real_time(np.std(x))
+		value = 't_cpmvs'
+
+	elif func == 'MeanTotalTime':
+		metric = lambda x: to_real_time(np.mean(x))
+		value = 't_time'
+
+	elif func == 'StdTotalTime':
+		metric = lambda x: to_real_time(np.std(x))
+		value = 't_time'
+
 	else:
 		return None;
+
+	nb_value = len(dataset[value])
+
+	if nb_value > 0:
+		str2return = str(metric(dataset[value]))
+		if nb_value != len(dataset['nb_images']):
+			str2return = str2return + " ({0})".format(nb_value)
+	else:
+		str2return = "No Results"
+
+	return str2return
 
 def gen_latex(results):
 
@@ -72,9 +133,12 @@ def gen_latex(results):
 			table.add_hline()
 
 			columns = ('NbTests', 'MeanNbImage', 'MeanSize', 'MeanStdSize',\
+				       'MeanNbCamerasKept', 'StdNbCamerasKept',\
 				       'MeanNbSift', 'MeanStdNbSift', 'MeanSiftTime',\
 				       'StdSiftTime','MeanNbMatch', 'MeanMatchTime',\
-				       'StdMatchTime','MeanBATime', 'StdBATime')
+				       'StdMatchTime','MeanBATime', 'StdBATime',\
+				       'MeanCMVS/PMVSTime', 'StdCMVS/PMVSTime',\
+				       'MeanTotalTime', 'StdTotalTime')
 
 			for column in columns:
 
@@ -92,7 +156,6 @@ def gen_latex(results):
 
 	subprocess.Popen(["evince results.pdf"],shell=True)
 
-
 def tabular_results(dirs):
 
 	results = defaultdict(lambda : defaultdict(list))
@@ -101,15 +164,13 @@ def tabular_results(dirs):
 
 		infos = sfmtest.parse_log(di)
 
-		results[infos['dataset']]['nb_images'].append(infos['nb_images'])
-		results[infos['dataset']]['mean_sizes'].append(infos['mean_sizes'])
-		results[infos['dataset']]['std_sizes'].append(infos['std_sizes'])
-		results[infos['dataset']]['mean_nb_sift'].append(infos['mean_nb_sift'])
-		results[infos['dataset']]['std_nb_sift'].append(infos['std_nb_sift'])
-		results[infos['dataset']]['t_sift'].append(infos['t_sift'])
-		results[infos['dataset']]['nb_match'].append(infos['nb_match'])
-		results[infos['dataset']]['t_match'].append(infos['t_match'])
-		results[infos['dataset']]['t_ba'].append(infos['t_ba'])
+		for keys, value in infos.items():
+
+			if keys == 'dataset':
+				continue
+			else:
+				if isinstance(value, int) or isinstance(value, float):
+					results[infos['dataset']][keys].append(value)
 
 	gen_latex(results)
 
@@ -129,6 +190,7 @@ def all_logs(dirpath, print_bool=1):
 			continue
 		else:
 			good_dirs.append(di)
+			print(di)
 
 		if print_bool:
 			print(sfmtest.read_log(di)) # note1 : not effective, read 2 times
@@ -157,9 +219,6 @@ if __name__ == '__main__':
 	else:
 		if dirpath[-1] != "/":
 			dirpath = dirpath+"/"
-		head = "FOR {0}".format(dirpath)
-		thelen = len(head) 
-		print(head)
-		print("-"*thelen)
-		sfmtest.read_log(dirpath)
+		print(dirpath)
+		print(sfmtest.read_log(dirpath))
 		print()
