@@ -229,7 +229,7 @@ def read_log(test_dir_name):
 				elif i > 2:
 					break 
 
-		infos.append("Number of cameras kept : {0} -- Proportion : {1:.2f}"\
+		infos.append("Number of cameras kept : {0} -- Proportion : {1:.2f} %"\
 			.format(nb_cameras_kept, nb_cameras_kept/nb_images*100))
 	else:
 		infos.append("Number of cameras kept : {0} -- Proportion : {1}"\
@@ -333,7 +333,7 @@ def parse_log(test_dir_name):
 		nb_cameras_kept = "~Not Found~"
 
 	nb_cameras_kept_prop = nb_cameras_kept_infos[nb_cameras_kept_infos.find\
-	("-- Proportion : ")+len("-- Proportion : "):nb_sift_infos.find("\n")]
+	("-- Proportion : ")+len("-- Proportion : "):nb_sift_infos.find(" %")]
 	
 	try:
 		nb_cameras_kept_prop = float(nb_cameras_kept_prop)
