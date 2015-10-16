@@ -39,11 +39,11 @@ def apply_function(dataset, func): #not very effective
 		value = 'std_sizes'
 
 	elif func == 'MeanNbCamerasKept':
-		metric = np.mean
+		metric = lambda x: str(np.mean(x)) + " \%"
 		value = 'nb_cameras_kept_prop'
 
 	elif func == 'StdNbCamerasKept':
-		metric = np.std
+		metric = lambda x: str(np.std(x)) + " \%"
 		value = 'nb_cameras_kept_prop'
 
 	elif func == 'MeanNbSift':
@@ -134,8 +134,8 @@ def gen_latex(results):
 
 			columns = ('NbTests', 'MeanNbImage', 'MeanSize', 'MeanStdSize',\
 				       'MeanNbCamerasKept', 'StdNbCamerasKept',\
-				       'MeanNbSift', 'MeanStdNbSift', 'MeanSiftTime',\
-				       'StdSiftTime','MeanNbMatch', 'MeanMatchTime',\
+				       'MeanNbSift', 'MeanStdNbSift', 'MeanNbMatch',\
+				       'MeanSiftTime','StdSiftTime','MeanMatchTime',\
 				       'StdMatchTime','MeanBATime', 'StdBATime',\
 				       'MeanCMVS/PMVSTime', 'StdCMVS/PMVSTime',\
 				       'MeanTotalTime', 'StdTotalTime')
@@ -190,7 +190,6 @@ def all_logs(dirpath, print_bool=1):
 			continue
 		else:
 			good_dirs.append(di)
-			print(di)
 
 		if print_bool:
 			print(sfmtest.read_log(di)) # note1 : not effective, read 2 times
