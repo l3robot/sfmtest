@@ -12,7 +12,7 @@ from shutil import copy, move
 
 # Infos #####################
 
-sfm_command = ["VisualSFM", "sfm"]
+sfm_command = ["VisualSFM", "sfm+pmvs"]
 test_dir = "/dev/shm/"
 good_ext = (".jpg", ".JPG")
 log_path = "/home/local/shared/sfm/bin/log" 
@@ -301,9 +301,9 @@ def main():
 
 	read_log(test_dir_name)
 
-	keep_result(test_dir_name)
-
 	correct_nvm(test_dir_name, dirpath)
+
+	keep_result(test_dir_name)
 
 if __name__ == '__main__':
 	main()
