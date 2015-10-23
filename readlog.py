@@ -54,6 +54,14 @@ def apply_function(dataset, func): #not very effective
 		metric = np.mean
 		value = 'std_nb_sift'
 
+	elif func == 'MeanNbMatch':
+		metric = np.mean
+		value = 'mean_nb_match'
+
+	elif func == 'MeanStdNbMatch':
+		metric = np.mean
+		value = 'std_nb_match'
+
 	elif func == 'MeanSiftTime':
 		metric = lambda x: to_real_time(np.mean(x))
 		value = 't_sift'
@@ -61,10 +69,6 @@ def apply_function(dataset, func): #not very effective
 	elif func == 'StdSiftTime':
 		metric = lambda x: to_real_time(np.std(x))
 		value = 't_sift'
-
-	elif func == 'MeanNbMatch':
-		metric = np.mean
-		value = 'nb_match'
 
 	elif func == 'MeanMatchTime':
 		metric = lambda x: to_real_time(np.mean(x))
@@ -134,7 +138,8 @@ def gen_latex(results):
 
 			columns = ('NbTests', 'MeanNbImage', 'MeanSize', 'MeanStdSize',\
 				       'MeanNbCamerasKept', 'StdNbCamerasKept',\
-				       'MeanNbSift', 'MeanStdNbSift', 'MeanNbMatch',\
+				       'MeanNbSift', 'MeanStdNbSift',\
+				       'MeanNbMatch', 'MeanStdNbMatch',\
 				       'MeanSiftTime','StdSiftTime','MeanMatchTime',\
 				       'StdMatchTime','MeanBATime', 'StdBATime',\
 				       'MeanCMVS/PMVSTime', 'StdCMVS/PMVSTime',\

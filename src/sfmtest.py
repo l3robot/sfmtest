@@ -199,6 +199,37 @@ def read_log(test_dir_name):
 		infos.append('mean sift number : {0} -- std sift number : {1}'\
 			.format("~Not Found~", "~Not Found~"))
 
+	### Match number
+
+	pt = 0
+	c = 0
+	nbs_match = []
+
+	while 1:
+		pt = log.find(" matches, ", pt)
+		if pt < 0:
+			print("Found {0} match number".format(c))
+			break
+		while(log[pt] != '\n'):
+			pt-=1
+		start=pt+1
+		end = log.find("\n", start)
+		pt=end
+		c+=1
+		temp = log[start:end]
+		nbm = temp[temp.find(": ")+2:temp.find(" m")]
+		nbs_match.append(int(nbm)) 
+
+	if len(nbs_match) > 0:
+		mean_nb_match = int(np.mean(nbs_match))
+		std_nb_match = int(np.std(nbs_match))
+
+		infos.append('mean match number : {0} -- std match number : {1}'\
+			.format(mean_nb_match, std_nb_match))
+	else:
+		infos.append('mean match number : {0} -- std match number : {1}'\
+			.format("~Not Found~", "~Not Found~"))
+
 	### CMVS/PMVS info
 
 	pt = 0
@@ -270,7 +301,8 @@ def parse_log(test_dir_name):
 
 	results = dict()
 
-	(head, _, _, _, size_infos, nb_sift_infos, nb_cameras_kept_infos,\
+	(head, _, _, _, size_infos, nb_sift_infos, nb_match_infos,\
+	    nb_cameras_kept_infos,\
 		time_sift_infos, match_infos, ba_infos,\
 		t_cpmvs_infos, t_time_infos) = infos.split('\n')
 
@@ -295,7 +327,7 @@ def parse_log(test_dir_name):
 		mean_sizes = "~Not Found~"
 
 	std_sizes = size_infos\
-	[size_infos.find("std size : ")+len("std size : "):size_infos.find("\n")]
+	[size_infos.find("std size : ")+len("std size : "):]
 
 	try:
 		std_sizes = int(std_sizes)
@@ -314,10 +346,29 @@ def parse_log(test_dir_name):
 
 	std_nb_sift = nb_sift_infos\
 	[nb_sift_infos.find\
-	("std sift number : ")+len("std sift number : "):nb_sift_infos.find("\n")] 
+	("std sift number : ")+len("std sift number : "):] 
 
 	try:
 		std_nb_sift = int(std_nb_sift)
+	except ValueError: 
+		std_nb_sift = "~Not Found~"
+
+	### match number infos
+	mean_nb_match = nb_match_infos\
+	[nb_match_infos.find\
+	("mean match number : ")+len("mean match number : "):nb_match_infos.find(" --")]
+
+	try:
+		mean_nb_match = int(mean_nb_match)
+	except ValueError: 
+		mean_nb_match = "~Not Found~"
+
+	std_nb_match = nb_match_infos\
+	[nb_match_infos.find\
+	("std match number : ")+len("std match number : "):] 
+
+	try:
+		std_nb_match = int(std_nb_match)
 	except ValueError: 
 		std_nb_sift = "~Not Found~"
 	
@@ -349,13 +400,7 @@ def parse_log(test_dir_name):
 		t_sift = "~Not Found~"
 
 	### match infos
-	nb_match = match_infos[0:match_infos.find(" Image")] 
 	t_match = match_infos[match_infos.find(", ")+2:match_infos.find(" sec")] 
-
-	try:
-		nb_match = int(nb_match)
-	except ValueError: 
-		nb_match = "~Not Found~"
 
 	try:
 		t_match = float(t_match)
@@ -394,10 +439,12 @@ def parse_log(test_dir_name):
 		t_time = t_time[0] 
 
 	return {'dataset':dataset, 'mean_sizes':mean_sizes, 'std_sizes':std_sizes,\
-	        'nb_images':nb_images,'mean_nb_sift':mean_nb_sift,\
-	        'nb_cameras_kept':nb_cameras_kept, 'nb_cameras_kept_prop':nb_cameras_kept_prop,\
-	        'std_nb_sift':std_nb_sift, 't_sift':t_sift,\
-	        'nb_match':nb_match, 't_match':t_match,\
+	        'nb_images':nb_images,\
+	        'mean_nb_sift':mean_nb_sift, 'std_nb_sift':std_nb_sift,\
+	        'mean_nb_match':mean_nb_match, 'std_nb_match':std_nb_match,\
+	        'nb_cameras_kept':nb_cameras_kept,\
+	        'nb_cameras_kept_prop':nb_cameras_kept_prop,\
+	         't_sift':t_sift, 't_match':t_match,\
 	        't_ba':t_ba, 't_cpmvs':t_cpmvs, 't_time':t_time}
 
 # Move test_dir in working directory
