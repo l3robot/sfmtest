@@ -52,7 +52,7 @@ class Log:
 				print("Found {0} images".format(len(images)))
 				break
 
-			line = line[5:].split(',')
+			line = line[line.find(':')+1:].split(',')
 
 			image['id'] = int(line[0])
 			image_size = line[1].split('x')
