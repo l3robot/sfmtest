@@ -18,10 +18,10 @@ def plot_2d(data, x, y):
 		return -1
 
 	f = np.polyfit(xx, yy, 1)
-	f = np.poly1d(f)
+	p = np.poly1d(f)
 
 	plt.plot(np.log(xx), yy, 'r.')
-	plt.title('Crawled on {0} images'.format(len(data)))
+	plt.title('Crawled on {0} images ~ y = {1:.2e}x + {2:.2e}'.format(len(data), f[0], f[1]))
 	plt.xlabel('log({0})'.format(x))
 	plt.ylabel('{0}'.format(y))
 
@@ -29,6 +29,5 @@ def plot_2d(data, x, y):
 	mi = np.min(xx)
 
 	xnew = np.linspace(mi, ma)
-	print(xnew)
-	plt.plot(np.log(xnew), f(xnew), 'b-')
+	plt.plot(np.log(xnew), p(xnew), 'b-')
 	plt.show()
