@@ -1,6 +1,8 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 
+from scipy.interpolate import interp1d
+
 def plot_2d(data, x, y):
 
 	try :
@@ -15,7 +17,16 @@ def plot_2d(data, x, y):
 		print("There's no \"{0}\" information in data".format(y))
 		return -1
 
+	f = interp1d(xx, yy)
+
 	plt.plot(np.log(xx), yy, 'r.')
+	plt.title('Crawled on {0} images'.format(len(data)))
 	plt.xlabel('log({0})'.format(x))
 	plt.ylabel('{0}'.format(y))
+
+	ma = np.max(xx)
+	mi = np.min(xx)
+
+	xnew = np.linspace(mi, ma, num=100)
+	plt.plot(np.log(xnew), f(xnew), 'b-')
 	plt.show()
