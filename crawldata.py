@@ -9,7 +9,7 @@ import sys
 from os.path import join, isdir, isfile
 from os import listdir
 
-def all_logs(dirpath, x, y):
+def all_logs(dirpath, x, y, xlog):
 
 	dirs = [join(dirpath, im) for im in listdir(dirpath) if isdir(join(dirpath, im))]
 
@@ -47,7 +47,7 @@ def all_logs(dirpath, x, y):
 
 	print('The script got information on {0} images'.format(data['nb_images']))
 
-	plot_2d(data['images'], x, y)
+	plot_2d(data['images'], x, y, xlog)
 
 if __name__ == '__main__':
 
@@ -55,4 +55,9 @@ if __name__ == '__main__':
 		print("You must give a directory name and plotting infos")
 		exit(-1)
 
-	all_logs(sys.argv[1], sys.argv[2], sys.argv[3])
+	if len(sys.argv) > 4:
+		log = False #fast hack
+	else:
+		log = True
+
+	all_logs(sys.argv[1], sys.argv[2], sys.argv[3], log)
