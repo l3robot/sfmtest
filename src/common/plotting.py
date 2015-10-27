@@ -17,7 +17,8 @@ def plot_2d(data, x, y):
 		print("There's no \"{0}\" information in data".format(y))
 		return -1
 
-	f = interp1d(xx, yy)
+	f = np.polyfit(xx, yy, 1)
+	f = np.poly1d(f)
 
 	plt.plot(np.log(xx), yy, 'r.')
 	plt.title('Crawled on {0} images'.format(len(data)))
@@ -27,6 +28,7 @@ def plot_2d(data, x, y):
 	ma = np.max(xx)
 	mi = np.min(xx)
 
-	xnew = np.linspace(mi, ma, num=100)
+	xnew = np.linspace(mi, ma)
+	print(xnew)
 	plt.plot(np.log(xnew), f(xnew), 'b-')
 	plt.show()
