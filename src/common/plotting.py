@@ -15,5 +15,7 @@ def plot_2d(data, x, y):
 		print("There's no \"{0}\" information in data".format(y))
 		return -1
 
-	plt.plot(xx, yy, 'r.')
+	plt.plot(np.log(xx), yy, 'r.')
+	plt.xlabel('log({0})'.format(x))
+	plt.xlabel('{0}'.format(y))
 	plt.show()
