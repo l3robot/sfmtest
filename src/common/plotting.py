@@ -27,7 +27,7 @@ def plot_2d(data, x, y, log=True):
 	p = np.poly1d(f)
 
 	plt.plot(xx, yy, 'r.')
-	plt.title('Crawled on {0} images ~ y = {1:.2e}x + {2:.2e}'.format(len(data), f[0], f[1]))
+	plt.title('Crawled on {0} results ~ y = {1:.2e}x + {2:.2e}'.format(len(data), f[0], f[1]))
 	plt.xlabel(xlabel)
 	plt.ylabel('{0}'.format(y))
 
