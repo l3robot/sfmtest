@@ -39,7 +39,7 @@ class Log:
 			pt-=1
 		return self.parse(self.log[pt], '\n', pt)
 
-	def parse_image_infos(self):
+	def parse_images_infos(self):
 
 		pt = 0
 		images = []

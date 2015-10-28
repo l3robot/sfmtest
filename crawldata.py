@@ -33,7 +33,7 @@ def all_logs(dirpath, typ, x, y, logscale):
 	data = {}
 
 	for log in logs:
-		if typ = 'images':
+		if typ == 'images':
 			log.parse_images_infos()
 		else:
 			log.parse_matches.infos()
