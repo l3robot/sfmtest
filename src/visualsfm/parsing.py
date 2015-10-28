@@ -63,6 +63,16 @@ class Log:
 
 			images.append(image)
 
+		#change idx
+		size = np.max([d['id'] for d in images]) + 1
+
+		temp = size*[None]
+
+		for d in images:
+			temp[d['id']] = d
+
+		images = temp
+
 		self.data['nb_images'] = len(images)
 		self.data['images'] = images
 
@@ -94,11 +104,7 @@ class Log:
 
 			match['id'] = [id1, id2]
 
-			try:
-				size = [self.data['images'][id1]['size'], self.data['images'][id2]['size']]
-			except IndexError:
-				print('visualsfm.parsing : {0} or {1} bigger than {2}'.format(id1, id2, len(self.data['images']))) 
-				continue
+			size = [self.data['images'][id1]['size'], self.data['images'][id2]['size']]
 
 			match['size'] = np.mean(size)
 

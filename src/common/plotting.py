@@ -6,13 +6,13 @@ from scipy.interpolate import interp1d
 def plot_2d(data, x, y, log=True):
 
 	try :
-		xx = [d[x] for d in data]
+		xx = [d[x] for d in data if isinstance(d, dict)]
 	except KeyError:
 		print("plotting : There's no \"{0}\" information in data".format(x))
 		return -1
 
 	try :
-		yy = [d[y] for d in data]
+		yy = [d[y] for d in data if isinstance(d, dict)]
 	except KeyError:
 		print("plotting : There's no \"{0}\" information in data".format(y))
 		return -1
