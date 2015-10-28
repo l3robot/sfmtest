@@ -110,3 +110,9 @@ class Log:
 
 		self.data['matches'] = matches		
 
+	def parse_ba_infos():
+		pass
+		
+	def parse_cpmvs_infos():
+		pass
+
