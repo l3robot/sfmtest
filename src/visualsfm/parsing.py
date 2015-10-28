@@ -72,7 +72,7 @@ class Log:
 			self.data['images']
 		except KeyError:
 			print("parse_matches_infos : Need to parse images infos first")
-			self.parse_image_infos()
+			self.parse_images_infos()
 
 		pt = 0
 		matches = []
