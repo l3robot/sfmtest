@@ -94,7 +94,10 @@ class Log:
 
 			match['id'] = [id1, id2]
 
-			size = [self.data['images'][id1]['size'], self.data['images'][id2]['size']]
+			try:
+				size = [self.data['images'][id1]['size'], self.data['images'][id2]['size']]
+			except IndexError:
+				print('visualsfm.parsing : {0} or {1} bigger than {2}'.format(id1, id2, len(self.data['images']))) 
 
 			match['size'] = np.mean(size)
 
