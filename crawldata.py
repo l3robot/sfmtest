@@ -9,7 +9,7 @@ import sys
 from os.path import join, isdir, isfile
 from os import listdir
 
-def all_logs(dirpath, x, y, xlog):
+def all_logs(dirpath, typ, x, y, logscale):
 
 	dirs = [join(dirpath, im) for im in listdir(dirpath) if isdir(join(dirpath, im))]
 
@@ -33,7 +33,7 @@ def all_logs(dirpath, x, y, xlog):
 	data = {}
 
 	for log in logs:
-		log.parse_image_infos()
+		log.parse_matches_infos()
 
 		for key, value in log.data.items():
 
@@ -45,19 +45,23 @@ def all_logs(dirpath, x, y, xlog):
 				except KeyError:
 					data[key] = value
 
-	print('The script got information on {0} images'.format(data['nb_images']))
-
-	plot_2d(data['images'], x, y, xlog)
+	try:
+		plot_2d(data[typ], x, y, logscale)
+	except KeyError:
+		print('crawldata : {0} is not in data'.format(typ))
+		return -1
 
 if __name__ == '__main__':
 
-	if len(sys.argv) < 4:
-		print("You must give a directory name and plotting infos")
+	if len(sys.argv) < 5:
+		print("crawldata : You must give a directory name and plotting infos")
 		exit(-1)
 
-	if len(sys.argv) > 4:
-		log = False #fast hack
+	if len(sys.argv) > 5:
+		logscale = False #fast hack
 	else:
-		log = True
+		logscale = True
 
-	all_logs(sys.argv[1], sys.argv[2], sys.argv[3], log)
+	dirpath, typ, x, y = sys.argv[1:5] 
+
+	all_logs(dirpath, typ, x, y, logscale)

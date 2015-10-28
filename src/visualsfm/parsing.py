@@ -68,6 +68,12 @@ class Log:
 
 	def parse_matches_infos(self):
 
+		try:
+			self.data['images']
+		except KeyError:
+			print("parse_matches_infos : Need to parse images infos first")
+			self.parse_image_infos()
+
 		pt = 0
 		matches = []
 
@@ -82,7 +88,15 @@ class Log:
 			images, infos = line.split(':')
 
 			images = images.split('and')
-			match['id'] = [int(images[0]), int(images[1])]
+
+			id1 = int(images[0])
+			id2 = int(images[1])
+
+			match['id'] = [id1, id2]
+
+			size = [self.data['images'][id1]['size'], self.data['images'][id2]['size']]
+
+			match['size'] = np.mean(size)
 
 			infos = infos.split(',')
 

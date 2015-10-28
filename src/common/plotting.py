@@ -8,13 +8,13 @@ def plot_2d(data, x, y, log=True):
 	try :
 		xx = [d[x] for d in data]
 	except KeyError:
-		print("There's no \"{0}\" information in data".format(x))
+		print("plotting : There's no \"{0}\" information in data".format(x))
 		return -1
 
 	try :
 		yy = [d[y] for d in data]
 	except KeyError:
-		print("There's no \"{0}\" information in data".format(y))
+		print("plotting : There's no \"{0}\" information in data".format(y))
 		return -1
 
 	if log:
