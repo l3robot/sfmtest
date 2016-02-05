@@ -24,6 +24,6 @@ class Tester:
 		print("Starting Tests with OpenMVG ...")
 
 		#with open(self.log_file, "w") as f:
-		call(self.command, stdout=f)
+		call(self.command)
 
 		print("End of OpenMVG process")
