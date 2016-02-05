@@ -41,7 +41,7 @@ def main():
 
 	testdir.clean_dir(test_dir_name, images_to_test)
 
-	keep_result(test_dir_name)
+	testdir.keep_result(test_dir_name)
 
 if __name__ == '__main__':
 	print(sys.__version__)
