@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from src.visualsfm.parsing import Log
+from src.visualsfm.parsing import Parser
 from src.common.plotting import plot_2d
 
 from collections import defaultdict
@@ -20,7 +20,7 @@ def all_logs(dirpath, typ, x, y, logscale):
 		if di[-1] != "/":
 			di = di+"/"
 
-		if not isfile(di+"log.txt"):
+		if not isfile(di+"Parser.txt"):
 			continue
 		else:
 			good_dirs.append(di)
@@ -28,17 +28,17 @@ def all_logs(dirpath, typ, x, y, logscale):
 	logs = []
 
 	for di in good_dirs:
-		logs.append(Log(di))
+		logs.append(Parser(di))
 
 	data = {}
 
-	for log in logs:
+	for Parser in logs:
 		if typ == 'images':
-			log.parse_images_infos()
+			Parser.parse_images_infos()
 		else:
-			log.parse_matches_infos()
+			Parser.parse_matches_infos()
 
-		for key, value in log.data.items():
+		for key, value in Parser.data.items():
 
 			if key == 'dataset':
 				continue

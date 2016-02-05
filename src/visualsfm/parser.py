@@ -1,6 +1,6 @@
 import numpy as np
 
-class Log:
+class Parser:
 
 	def __init__(self, dirpath):
 
@@ -120,9 +120,12 @@ class Log:
 
 		self.data['matches'] = matches		
 
-	def parse_ba_infos():
+	def parse_timing_infos(self):
+		
+
+	def parse_ba_infos(self):
 		pass
 		
-	def parse_cpmvs_infos():
+	def parse_cpmvs_infos(self):
 		pass
 
