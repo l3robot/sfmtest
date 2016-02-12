@@ -31,7 +31,7 @@ def file_and_image(dirpath, images):
 	return True
 
 # Choose a random number of images to use
-def choose_image(dirpath, number):
+def choose_image(dirpath, number, algo):
 
 	test_time = time.asctime(time.localtime())
 	test_time = test_time.lower().replace(" ", "_")
@@ -61,7 +61,7 @@ def choose_image(dirpath, number):
 
 	images_kept = [im for i, im in enumerate(images) if i in idx]
 
-	test_dir_name = test_dir+"sfmtest-"+dirname+"_"+str(number)+"img"+"-"+test_time+"/"
+	test_dir_name = test_dir+"sfmtest"+algo+'-'+dirname+"_"+str(number)+"img"+"-"+test_time+"/"
 
 	if not os.path.exists(test_dir_name):
 		os.makedirs(test_dir_name)

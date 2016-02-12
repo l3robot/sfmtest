@@ -29,7 +29,7 @@ def main():
 		print("You must give a valid sfm implementation.")
 		exit(0)
 
-	test_dir_name, images_to_test = testdir.choose_image(dirpath, number)
+	test_dir_name, images_to_test = testdir.choose_image(dirpath, number, algo)
 	testdir.setup_dir(test_dir_name, images_to_test)
 
 	if algo == "-O" or algo == "-OpenMVG":
