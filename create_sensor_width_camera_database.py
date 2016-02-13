@@ -2,6 +2,7 @@
 
 import sys
 import os
+import math
 
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -55,6 +56,9 @@ def compute_score(cam, ref, verbose=False):
 	scam = cam.lower()
 	sref = ref.lower()
 
+	if verbose:
+		print('{} {}'.format(scam, sref))
+
 	lcam = len(scam)
 	lref = len(ref)
 	
@@ -74,18 +78,24 @@ def compute_score(cam, ref, verbose=False):
 
 		tcam = ' '*i + scam + ' '*(lpad-i)
 
-		tscore = 0
+		if lpad > 0:
+			tscore = math.ceil(math.log(lpad))
+		else:
+			tscore = 0
+
 		truc = []
 
 		for c, r in zip(list(tcam), list(sref)):
+			if verbose:
+					print('{} {} {}'.format(lpad, c,r))
 			if c == ' ':
 				truc.append('0')
 				tscore += 0
 			elif c != r:
-				if verbose:
-					print('{} {} {}'.format(lpad, c,r))
 				tscore += 1
 				truc.append('1')
+			else:
+				truc.append('0')
 
 		scores.append(tscore)
 		if verbose:
@@ -102,39 +112,42 @@ def eliminate_company(img, cameras):
 
 	score = 0.0
 
-	for i, c in enumerate(cameras):
+	scores = []
+
+	for c in cameras:
 		t_score = compute_score(img.company, c.company)
+		scores.append(t_score)
 		if t_score > score:
 			score = t_score
-			start = i
-			end = i
-			# print('New Potential Data : {} -- camera : {} -- ref : {}'.format(t_score, img.create_line(), c.create_line()))
-		elif t_score == score:
-			# print('New Potential Data : {} -- camera : {} -- ref : {}'.format(t_score, img.create_line(), c.create_line()))
-			end = i
 
-	# print('** Found {} potential camera by company -- max score : {}**'.format(end-start+1, score))
+	kept_cameras = []
 
-	return cameras[start:end+1], score
+	for c, s in zip(cameras, scores):
+		if s == score:
+			kept_cameras.append(c)
+
+	return kept_cameras, score
 
 def eliminate_model(img, cameras):
 
 	score = 0.0
 
-	for i, c in enumerate(cameras):
+	scores = []
+
+	for c in cameras:
 		t_score = compute_score(img.model, c.model)
+		scores.append(t_score)
 		if t_score > score:
 			score = t_score
-			start = i
-			end = i
 			# print('New Potential Data : {} -- camera : {} -- ref : {}'.format(t_score, img.create_line(), c.create_line()))
-		elif t_score == score:
-			# print('New Potential Data : {} -- camera : {} -- ref : {}'.format(t_score, img.create_line(), c.create_line()))
-			end = i
 
-	# print('** Found {} potential camera by model -- max score : {}**'.format(end-start+1, score))
+	kept_cameras = []
 
-	return cameras[start:end+1], score
+	for c, s in zip(cameras, scores):
+		if s == score:
+			kept_cameras.append(c)
+
+	return kept_cameras, score
 
 def main():
 
@@ -159,14 +172,32 @@ def main():
 
 	images = [os.path.join(dirpath, im) for im in os.listdir(dirpath)]
 
+	new_database = []
 	new_file = []
+
+	models = []
 
 	for image in images:
 		image_camera = read_exif(image)
-		kept_cameras, company_score = eliminate_company(image_camera, cameras)
-		kept_cameras, model_score = eliminate_model(image_camera, kept_cameras)
-		camera = kept_cameras[0]
-		print('image : {} -- ref : {} -- scores {} {}'.format(image_camera.create_line(), camera.create_line(), company_score, model_score))
+
+		if image_camera.model not in models:
+			kept_cameras, company_score = eliminate_company(image_camera, cameras)
+			kept_cameras, model_score = eliminate_model(image_camera, kept_cameras)
+			camera = kept_cameras[0]
+
+			image_camera.width = camera.width
+			new_database.append(image_camera.create_line())
+
+			infos = 'image : {} -- ref : {} -- scores {} {}'.format(image_camera.create_line(), camera.create_line(), company_score, model_score)
+			new_file.append(infos)
+			print(infos)
+			models.append(image_camera.model)
+
+	with open(test_dir_name+"result.txt", 'w') as f:
+		f.write('\n'.join(new_file))
+
+	with open(test_dir_name+"sw_database.txt", 'w') as f:
+		f.write('\n'.join(new_database))
 
 	testdir.clean_dir(test_dir_name, images_to_test)
 
