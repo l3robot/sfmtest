@@ -204,7 +204,6 @@ def main():
 
 	with open(test_dir_name+"result.txt", 'w') as f:
 		f.write('\n'.join(new_file))
-		f.write('\n')
 
 	with open(test_dir_name+"sw_database.txt", 'w') as f:
 		f.write('\n'.join(new_database))
