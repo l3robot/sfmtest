@@ -187,7 +187,7 @@ def main():
 	for image in images:
 		image_camera = read_exif(image)
 
-		if images_camera is None:
+		if image_camera is None:
 			continue
 
 		if image_camera.model not in models:
