@@ -119,18 +119,15 @@ def compute_score(cam, ref, verbose=False):
 	return 100.0 - (float(min(scores)) / float(lcam) * 100.0)
 
 def eliminate_company(img, cameras):
-
-	score = 0.0
-
 	scores = []
 
 	for c in cameras:
 		t_score = compute_score(img.company, c.company)
 		scores.append(t_score)
-		if t_score > score:
-			score = t_score
 
 	kept_cameras = []
+
+	score = math.min(scores)
 
 	for c, s in zip(cameras, scores):
 		if s == score:
@@ -140,18 +137,15 @@ def eliminate_company(img, cameras):
 
 def eliminate_model(img, cameras):
 
-	score = 0.0
-
 	scores = []
 
 	for c in cameras:
 		t_score = compute_score(img.model, c.model)
 		scores.append(t_score)
-		if t_score > score:
-			score = t_score
-			# print('New Potential Data : {} -- camera : {} -- ref : {}'.format(t_score, img.create_line(), c.create_line()))
 
 	kept_cameras = []
+
+	score = math.min(scores)
 
 	for c, s in zip(cameras, scores):
 		if s == score:
