@@ -4,6 +4,8 @@ import sys
 import os
 import math
 
+import numpy as np
+
 from PIL import Image
 from PIL.ExifTags import TAGS
 
@@ -127,7 +129,7 @@ def eliminate_company(img, cameras):
 
 	kept_cameras = []
 
-	score = math.min(scores)
+	score = np.min(scores)
 
 	for c, s in zip(cameras, scores):
 		if s == score:
@@ -145,7 +147,7 @@ def eliminate_model(img, cameras):
 
 	kept_cameras = []
 
-	score = math.min(scores)
+	score = np.min(scores)
 
 	for c, s in zip(cameras, scores):
 		if s == score:
