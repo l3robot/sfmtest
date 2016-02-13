@@ -36,6 +36,9 @@ def get_exif(img):
 
 	new_exif = {}
 
+	if exif is None:
+		return None
+
 	for t, v in exif.items():
 		str_v = TAGS.get(t, t)
 		new_exif[str_v] = v
@@ -46,6 +49,10 @@ def read_exif(image):
 
 	with Image.open(image) as img:
 		exif = get_exif(img)
+
+	if exif is None:
+		print("ERROR WHILE READING EXIF {}".format(image))
+		return None
 
 	company = exif['Make']
 	model = exif['Model']
@@ -179,6 +186,9 @@ def main():
 
 	for image in images:
 		image_camera = read_exif(image)
+
+		if images_camera is None:
+			continue
 
 		if image_camera.model not in models:
 			kept_cameras, company_score = eliminate_company(image_camera, cameras)
