@@ -53,9 +53,12 @@ def read_exif(image):
 	if exif is None:
 		print("ERROR WHILE READING EXIF {}".format(image))
 		return None
-
-	company = exif['Make']
-	model = exif['Model']
+	try:
+		company = exif['Make']
+		model = exif['Model']
+	except KeyError:
+		print("ERROR WHILE READING EXIF {}".format(image))
+		return None
 
 	return Camera(company, model, '')
 
