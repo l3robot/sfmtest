@@ -86,8 +86,8 @@ def compute_score(cam, ref, verbose=False):
 
 	if lpad > 0:
 			start_score = math.ceil(math.log(lpad))
-		else:
-			start_score = 0
+	else:
+		start_score = 0
 
 	scores = []
 
