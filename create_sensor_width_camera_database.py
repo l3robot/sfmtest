@@ -64,9 +64,23 @@ def read_exif(image):
 
 	return Camera(company, model, '')
 
+not_info_ch = ['-', '_']
+
+def clean(cam):
+
+	ncam = []
+
+	for c in cam:
+		if c not in not_info_ch:
+			ncam.append(c)
+
+	ncam = ''.join(ncam)
+
+	return ncam.lower()
+
 def compute_score(cam, ref, verbose=False):
-	scam = cam.lower()
-	sref = ref.lower()
+	scam = clean(cam)
+	sref = clean(ref)
 
 	if verbose:
 		print('{} {}'.format(scam, sref))
