@@ -84,16 +84,18 @@ def compute_score(cam, ref, verbose=False):
 
 	lpad = lref - lcam
 
+	if lpad > 0:
+			start_score = math.ceil(math.log(lpad))
+		else:
+			start_score = 0
+
 	scores = []
 
 	for i in range(lpad+1):
 
-		tcam = ' '*i + scam + ' '*(lpad-i)
+		tscore = start_score
 
-		if lpad > 0:
-			tscore = math.ceil(math.log(lpad))
-		else:
-			tscore = 0
+		tcam = ' '*i + scam + ' '*(lpad-i)
 
 		truc = []
 
@@ -129,7 +131,7 @@ def eliminate_company(img, cameras):
 
 	kept_cameras = []
 
-	score = np.min(scores)
+	score = np.max(scores)
 
 	for c, s in zip(cameras, scores):
 		if s == score:
@@ -147,7 +149,7 @@ def eliminate_model(img, cameras):
 
 	kept_cameras = []
 
-	score = np.min(scores)
+	score = np.max(scores)
 
 	for c, s in zip(cameras, scores):
 		if s == score:
