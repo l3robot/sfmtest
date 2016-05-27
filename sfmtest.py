@@ -3,4 +3,4 @@
 import src.sfmtest as sfmtest
 
 if __name__ == '__main__':
-	sfmtest.main()
+    sfmtest.main()
