@@ -70,12 +70,8 @@ def depth_map(dense, new_image, R, C, focal):
     mx = mx // 2
     my = my // 2
 
-    t = np.array([[1,0,0],
-                 [0,1,0],
-                 [0,0,1]])
-
     for p in pointPos:
-        p_c = R.dot(t.dot(p))-R.dot(C)
+        p_c = R.dot(p)-R.dot(C)
         x, y = focal/p_c[2]*p_c[:2]
         if int(y) < mx and int(x) < my:
             new_image[int(y)+mx, int(x)+my] = C[2]-p_c[2]
