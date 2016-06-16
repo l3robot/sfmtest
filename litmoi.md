@@ -40,6 +40,8 @@ SFMTest est un ensemble de programme pour faire des tests sur la SFM. La structu
 2. Installer openMVG et mettre tout ses programmes dans le PATH
 3. Installer CMVS et PMVS et s'assurer que tous les programmes sont dans le PATH
 4. Installer VisualSFM et s'assurer que tous les programmes sont dans le PATH
+5. Ajouter la camera test model test avec la bonne valeur de camera width dans la liste de camera width de openMVG
+6. Changer la distance focale dans les scripts au besoin
 
 ### Manuel
 
