@@ -53,11 +53,19 @@ Pour partir un test avec openMVG il suffit de faire :
 python sfmtest.py -O <\chemin-vers-dataset\> <\nb-de-photos\>
 ```
 
+**Sortie importantes du programme :**
+- /results/reconstruction\_global/robust\_colorized.py : meilleure reconstruction légère
+- /results/reconstruction\_global/sfm\_data.json : données du sfm
+- /results/reconstruction\_global/PMVS/models/pmvs\_options.txt.ply : reconstruction dense
+
 Le programme créera un environnement dans la RAM temporairement (/dev/shm) et copiera l'environnement dans le dossier courant à la fin des tests. Pour afficher la carte de profondeur ensuite, il suffit de faire :
 
 ```shell
 python get_depth_map.py <\chemin-vers-environnement\>
 ```
+
+**Sortie du programme :**
+- Affiche la reconstruction dense à l'aide de matplotlib, peut être enregistrée ensuite  
 
 ##### VisualSFM
 
